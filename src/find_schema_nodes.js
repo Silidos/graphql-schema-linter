@@ -24,6 +24,11 @@ export function findSchemaNodes(scopes, schema) {
 function findScopeNode(scope, schema) {
   const [typeName, fieldName, argumentName] = scope.split('.');
   const type = schema.getType(typeName);
+    // Logic to ignore query names that have WorkaroundForSDLTypeSystem
+  if (type?.getValue(fieldName).includes("WorkaroundForSDLTypeSystem")) {
+    return null;
+  }
+
   let astNode = type?.astNode;
   if (fieldName === undefined) {
     return astNode;

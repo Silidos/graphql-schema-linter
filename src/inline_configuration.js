@@ -13,6 +13,17 @@ export function extractInlineConfigs(ast) {
 
       configurations.push(parseInlineComment(token));
     }
+    
+    // Logic to ignore types that have comments that start with #Extending
+    if (token.kind == 'Comment' && token.value.startsWith('Extending')) {
+      const previousToken = token.prev;
+      const nextToken = token.next;
+
+      previousToken.next = nextToken;
+      nextToken.prev = previousToken;
+
+      configurations.push(parseInlineComment(token));
+    }
 
     token = token.next;
   }
@@ -44,8 +55,17 @@ function parseInlineComment(token) {
         rules: parseRulesArg(matches[3]),
         line: token.line,
       };
+    // Logic to ignore types that have comments that start with #Extending
+    case 'Extending':
+      return {
+        command: 'disable',
+        rules: parseRulesArg(ignoreFederationRules),
+        line: token.line,
+      }
   }
 }
+
+var ignoreFederationRules = 'defined-types-are-used, fields-have-descriptions, arguments-have-descriptions, types-have-descriptions, fields-are-camel-cased';
 
 function parseRulesArg(value) {
   return value.split(/\,\s+/);
