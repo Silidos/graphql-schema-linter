@@ -15,13 +15,15 @@ export function FieldsHaveDescriptions(configuration, context) {
       const fieldName = node.name.value;
       const parentName = ancestors[ancestors.length - 1].name.value;
 
-      context.reportError(
-        new ValidationError(
-          'fields-have-descriptions',
-          `The field \`${parentName}.${fieldName}\` is missing a description.`,
-          [node]
-        )
-      );
+      if (!fieldName.includes('WorkaroundForSDLTypeSystem')) {
+        context.reportError(
+          new ValidationError(
+            'fields-have-descriptions',
+            `The field \`${parentName}.${fieldName}\` is missing a description.`,
+            [node]
+          )
+        );
+      }
     },
   };
 }

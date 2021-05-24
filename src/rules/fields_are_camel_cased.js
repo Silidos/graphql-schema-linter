@@ -6,7 +6,10 @@ export function FieldsAreCamelCased(context) {
   return {
     FieldDefinition(node, key, parent, path, ancestors) {
       const fieldName = node.name.value;
-      if (!camelCaseTest.test(fieldName)) {
+      if (
+        !camelCaseTest.test(fieldName) &&
+        !fieldName.includes('WorkaroundForSDLTypeSystem')
+      ) {
         const parentName = ancestors[ancestors.length - 1].name.value;
         context.reportError(
           new ValidationError(
