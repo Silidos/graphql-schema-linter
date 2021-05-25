@@ -29,14 +29,21 @@ export function validateSchemaDefinition(inputSchema, rules, configuration) {
   }
 
   let schemaErrors = validateSDL(ast);
+  var substringsArray = ['@key', '@extends', '@requires', '@external'];
   if (schemaErrors.length > 0) {
     return sortErrors(
       schemaErrors.map((error) => {
-        return new ValidationError(
-          'invalid-graphql-schema',
-          error.message,
-          error.nodes
-        );
+        if (
+          substringsArray.some((substring) => error.message.includes(substring))
+        ) {
+          schemaErrors.pop();
+        } else {
+          return new ValidationError(
+            'invalid-graphql-schema',
+            error.message,
+            error.nodes
+          );
+        }
       })
     );
   }
@@ -46,7 +53,6 @@ export function validateSchemaDefinition(inputSchema, rules, configuration) {
     assumeValidSDL: true,
     assumeValid: true,
   });
-
   schema.__validationErrors = undefined;
   schemaErrors = validateSchema(schema);
   if (schemaErrors.length > 0) {

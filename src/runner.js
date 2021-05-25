@@ -108,7 +108,8 @@ export async function run(stdout, stdin, stderr, argv) {
   const formatter = configuration.getFormatter();
   const rules = configuration.getRules();
 
-  const errors = validateSchemaDefinition(schema, rules, configuration);
+  var errors = validateSchemaDefinition(schema, rules, configuration);
+  errors = errors.filter((n) => n);
   const groupedErrors = groupErrorsBySchemaFilePath(errors, schema.sourceMap);
 
   const writeResult = stdout.write(formatter(groupedErrors));
